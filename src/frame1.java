@@ -8,7 +8,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputMethodListener;
-import java.sql.Connection;
+import java.sql.*;
 import java.awt.event.InputMethodEvent;
 import javax.swing.JPasswordField;
 
@@ -105,22 +105,38 @@ public class frame1 {
 		JButton btnSignIn = new JButton("Sign In");
 		btnSignIn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				newstr = textField.getText();
-		
-				String p = "bacon1";
-				String passy = new String(inpass.getPassword());
-				
-	if(p.equals(passy)) {
-		
-		JOptionPane.showMessageDialog(frame, "hello, "+newstr);
-	}
-	else
-		JOptionPane.showMessageDialog(frame, "sorry, try again");
-				
-				
+
+			try {
+				String query = "select * from Collaborators where name=? and password=?";
+				PreparedStatement pst = connection.prepareStatement(query);
+				pst.setString(1, textField.getText());
+				pst.setString(2,inpass.getText());
+
+
+ 				ResultSet rs=pst.executeQuery();
+ 				int count=0;
+ 				while(rs.next()) {
+ 					count++;
+ 				}
+ 				
+ 				if(count==1) {
+ 					JOptionPane.showMessageDialog(null, "Welcome "+textField.getText());	
+ 				}
+ 				else if(count>1) {
+ 					JOptionPane.showMessageDialog(null, "Duplicate username and password");
+ 				}
+ 				else {
+ 					JOptionPane.showMessageDialog(null, "Username and password are not correct");
+ 				}
+ 				rs.close();
+ 				pst.close();
+ 				
+			}catch(Exception e1){
+				JOptionPane.showMessageDialog(null, e);			
 			}
-		});
+
+		}	
+			});
 		btnSignIn.setBounds(168, 232, 117, 29);
 		frame.getContentPane().add(btnSignIn);
 		
