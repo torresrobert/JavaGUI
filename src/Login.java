@@ -1,5 +1,7 @@
 import java.awt.EventQueue;
 
+import javax.swing.*;
+import java.sql.*;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -12,7 +14,7 @@ import java.sql.Connection;
 import java.awt.event.InputMethodEvent;
 import javax.swing.JPasswordField;
 
-public class frame1 {
+public class Login {
 
 	private JFrame frame;
 	private JTextField textField;
@@ -26,7 +28,7 @@ public class frame1 {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					frame1 window = new frame1();
+					Login window = new Login();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -38,7 +40,7 @@ public class frame1 {
 	/**
 	 * Create the application.
 	 */
-	public frame1() {
+	public Login() {
 		initialize();
 		connection = sqliteConnection.dbConnector();
 	}
@@ -105,22 +107,41 @@ public class frame1 {
 		JButton btnSignIn = new JButton("Sign In");
 		btnSignIn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				newstr = textField.getText();
-		
-				String p = "bacon1";
-				String passy = new String(inpass.getPassword());
-				
-	if(p.equals(passy)) {
-		
-		JOptionPane.showMessageDialog(frame, "hello, "+newstr);
-	}
-	else
-		JOptionPane.showMessageDialog(frame, "sorry, try again");
-				
-				
+
+			try {
+				String query = "select * from team_members where username=? and password=?";
+				PreparedStatement pst = connection.prepareStatement(query);
+				pst.setString(1, textField.getText());
+				pst.setString(2, inpass.getText());
+
+
+ 				ResultSet rs=pst.executeQuery();
+ 				int count=0;
+ 				while(rs.next()) {
+ 					count++;
+ 				}
+ 				
+ 				if(count==1) {
+ 					JOptionPane.showMessageDialog(null, "Welcome "+textField.getText());	
+ 					frame.dispose();
+ 					functionSelector funcSelect = new functionSelector();
+ 					funcSelect.setVisible(true);
+ 				}
+ 				else if(count>1) {
+ 					JOptionPane.showMessageDialog(null, "Duplicate username and password");
+ 				}
+ 				else {
+ 					JOptionPane.showMessageDialog(null, "Username and password are not correct");
+ 				}
+ 				rs.close();
+ 				pst.close();
+ 				
+			}catch(Exception e1){
+				JOptionPane.showMessageDialog(null, e);			
 			}
-		});
+
+		}	
+			});
 		btnSignIn.setBounds(168, 232, 117, 29);
 		frame.getContentPane().add(btnSignIn);
 		
