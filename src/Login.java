@@ -1,5 +1,7 @@
 import java.awt.EventQueue;
 
+import javax.swing.*;
+import java.sql.*;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -8,11 +10,11 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputMethodListener;
-import java.sql.*;
+import java.sql.Connection;
 import java.awt.event.InputMethodEvent;
 import javax.swing.JPasswordField;
 
-public class frame1 {
+public class Login {
 
 	private JFrame frame;
 	private JTextField textField;
@@ -26,7 +28,7 @@ public class frame1 {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					frame1 window = new frame1();
+					Login window = new Login();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -38,7 +40,7 @@ public class frame1 {
 	/**
 	 * Create the application.
 	 */
-	public frame1() {
+	public Login() {
 		initialize();
 		connection = sqliteConnection.dbConnector();
 	}
@@ -107,10 +109,10 @@ public class frame1 {
 			public void actionPerformed(ActionEvent e) {
 
 			try {
-				String query = "select * from Collaborators where name=? and password=?";
+				String query = "select * from team_members where username=? and password=?";
 				PreparedStatement pst = connection.prepareStatement(query);
 				pst.setString(1, textField.getText());
-				pst.setString(2,inpass.getText());
+				pst.setString(2, inpass.getText());
 
 
  				ResultSet rs=pst.executeQuery();
@@ -121,6 +123,9 @@ public class frame1 {
  				
  				if(count==1) {
  					JOptionPane.showMessageDialog(null, "Welcome "+textField.getText());	
+ 					frame.dispose();
+ 					functionSelector funcSelect = new functionSelector();
+ 					funcSelect.setVisible(true);
  				}
  				else if(count>1) {
  					JOptionPane.showMessageDialog(null, "Duplicate username and password");
